@@ -371,13 +371,29 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(KR0_GPIO_Port, &GPIO_InitStruct);
+	
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
+boolean armed = false;
+HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);//turn green led on
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
-
+void StartTaskLeds(void *argument){
+	for (;;)
+	  {
+	  	if (armed){
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);//turn green led off
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);//turn red led on
+		}
+		else{
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);//turn red led off
+			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);//turn green led on
+		}
+		
+	}
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
