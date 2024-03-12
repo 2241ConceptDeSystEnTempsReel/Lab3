@@ -82,6 +82,10 @@ const osThreadAttr_t TaskLED_attributes = {
 /* USER CODE BEGIN PV */
 extern char key;
 char hold[4];
+char code[4];
+int codeSet = 0;
+int armed = 0;
+char ast[4];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -374,26 +378,10 @@ static void MX_GPIO_Init(void)
 	
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
-boolean armed = false;
-HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);//turn green led on
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
-void StartTaskLeds(void *argument){
-	for (;;)
-	  {
-	  	if (armed){
-			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);//turn green led off
-			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);//turn red led on
-		}
-		else{
-			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);//turn red led off
-			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);//turn green led on
-		}
-		
-	}
-}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -427,9 +415,33 @@ void StartTaskKeypad(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
-  }
+	  if(codeSet == 0){
+		  int length = strlen(hold);
+		  if(length<4){
+			  key = Get_Key();
+			  sprintf(hold, "%c", key);
+			  HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
+			  HAL_Delay (500);
+		  }else{
+			  strcpy(code, hold);
+			  hold[0] = '\0';
+			  codeSet = 1;
+		  }
+	  }else{
+		  int length = strlen(hold);
+		  if(length<4){
+			  key = Get_Key();
+			  sprintf(hold, "%c", key);
+			  HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
+			  HAL_Delay (500);
+		  }else{
+			  if(hold==code){
+				  armed = ~armed;
+			  }
+		  }
+	  }
   /* USER CODE END StartTaskKeypad */
+}
 }
 
 /* USER CODE BEGIN Header_StartTaskDisplay */
@@ -443,10 +455,14 @@ void StartTaskDisplay(void *argument)
 {
   /* USER CODE BEGIN StartTaskDisplay */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+	while (1)
+	{
+		int passwordLength = strlen(hold); // Current length of the password
+	    SSD1306_GotoXY (0, 30);
+	    SSD1306_Puts("*", &Font_11x18, 1); // Display the password mask
+	    SSD1306_UpdateScreen(); // Update the screen to show the masked password
+	    HAL_Delay (500); // Delay to debounce and slow down input for demo purposes
+	}
   /* USER CODE END StartTaskDisplay */
 }
 
@@ -461,10 +477,18 @@ void StartTaskLED(void *argument)
 {
   /* USER CODE BEGIN StartTaskLED */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+	for (;;)
+	  {
+		if (armed){
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+		}
+		else{
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+		}
+
+	}
   /* USER CODE END StartTaskLED */
 }
 
