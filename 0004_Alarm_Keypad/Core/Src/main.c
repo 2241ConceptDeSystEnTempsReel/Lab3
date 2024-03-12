@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -50,6 +51,34 @@ I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart2;
 
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for TaskKeypad */
+osThreadId_t TaskKeypadHandle;
+const osThreadAttr_t TaskKeypad_attributes = {
+  .name = "TaskKeypad",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for TaskDisplay */
+osThreadId_t TaskDisplayHandle;
+const osThreadAttr_t TaskDisplay_attributes = {
+  .name = "TaskDisplay",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for TaskLED */
+osThreadId_t TaskLEDHandle;
+const osThreadAttr_t TaskLED_attributes = {
+  .name = "TaskLED",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 extern char key;
 char hold[4];
@@ -60,6 +89,11 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
+void StartDefaultTask(void *argument);
+void StartTaskKeypad(void *argument);
+void StartTaskDisplay(void *argument);
+void StartTaskLED(void *argument);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -112,6 +146,50 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of TaskKeypad */
+  TaskKeypadHandle = osThreadNew(StartTaskKeypad, NULL, &TaskKeypad_attributes);
+
+  /* creation of TaskDisplay */
+  TaskDisplayHandle = osThreadNew(StartTaskDisplay, NULL, &TaskDisplay_attributes);
+
+  /* creation of TaskLED */
+  TaskLEDHandle = osThreadNew(StartTaskLED, NULL, &TaskLED_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -120,14 +198,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	/* D10 to D7 as input pins for row 0 to row 3. D6 to D3 as output for column pins C1 to C3*/
-	  key = Get_Key();
-	  sprintf(hold, "%c", key);
-	  HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
-	  SSD1306_GotoXY (0, 30);
-	  SSD1306_UpdateScreen();
-	  SSD1306_Puts (hold, &Font_11x18, 1);
-	  SSD1306_UpdateScreen();
-	  HAL_Delay (500);
+
   }
   /* USER CODE END 3 */
 }
@@ -264,13 +335,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, KC0_Pin|KC3_Pin|KC1_Pin|KC2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : PA5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  /*Configure GPIO pins : PA5 PA6 PA7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -308,6 +379,78 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
+{
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartTaskKeypad */
+/**
+* @brief Function implementing the TaskKeypad thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTaskKeypad */
+void StartTaskKeypad(void *argument)
+{
+  /* USER CODE BEGIN StartTaskKeypad */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTaskKeypad */
+}
+
+/* USER CODE BEGIN Header_StartTaskDisplay */
+/**
+* @brief Function implementing the TaskDisplay thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTaskDisplay */
+void StartTaskDisplay(void *argument)
+{
+  /* USER CODE BEGIN StartTaskDisplay */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTaskDisplay */
+}
+
+/* USER CODE BEGIN Header_StartTaskLED */
+/**
+* @brief Function implementing the TaskLED thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTaskLED */
+void StartTaskLED(void *argument)
+{
+  /* USER CODE BEGIN StartTaskLED */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTaskLED */
+}
 
 /**
   * @brief  Period elapsed callback in non blocking mode
