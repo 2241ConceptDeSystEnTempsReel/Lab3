@@ -477,6 +477,16 @@ void StartTaskDisplay(void *argument)
     SSD1306_GotoXY(0, 30);
     SSD1306_Puts("*", &Font_11x18, 1); // Display the password mask
     SSD1306_UpdateScreen();            // Update the screen to show the masked password
+    SSD1306_GotoXY (0,0);
+    if (armed)
+	{
+	  SSD1306_Puts ("ARMED:", &Font_11x18, 1);
+	}
+	else
+	{
+	  SSD1306_Puts ("NOT ARMED:", &Font_11x18, 1);
+	}
+    SSD1306_UpdateScreen();
     osDelay(100);                      // Delay
   }
   /* USER CODE END StartTaskDisplay */
