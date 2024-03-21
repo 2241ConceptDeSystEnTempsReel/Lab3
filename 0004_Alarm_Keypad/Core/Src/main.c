@@ -466,20 +466,29 @@ void StartTaskDisplay(void *argument)
 {
   /* USER CODE BEGIN StartTaskDisplay */
   /* Infinite loop */
-  for
+  for (;;)
   {
-    // puts **** on the screen corresponding to the length of the password
-    int passwordLength = strlen(hold); // Current length of the password
-    for (int i = 0; i < passwordLength; i++)
-    {
-      SSD1306_Putc('*', &Font_11x18, 1);
-    }
-    for (int i = 0; i < 4 - passwordLength; i++)
-    {
-      SSD1306_Putc(' ', &Font_11x18, 1);
-    }
+	int passwordLength = strlen(hold); // Current length of the password
+	for (int i = 0; i < passwordLength; i++)
+	{
+    SSD1306_Putc('*', &Font_11x18, 1);
+	}
+	for (int i = 0; i < 4 - passwordLength; i++)
+	{
+    SSD1306_Putc(' ', &Font_11x18, 1);
+	}
+	SSD1306_UpdateScreen();            // Update the screen to show the masked password
+    SSD1306_GotoXY (0,0);
+    if (armed)
+	{
+	  SSD1306_Puts ("ARMED:", &Font_11x18, 1);
+	}
+	else
+	{
+	  SSD1306_Puts ("NOT ARMED:", &Font_11x18, 1);
+	}
     SSD1306_UpdateScreen();
-    osDelay(100);
+    osDelay(100);                      // Delay
   }
   /* USER CODE END StartTaskDisplay */
 }
