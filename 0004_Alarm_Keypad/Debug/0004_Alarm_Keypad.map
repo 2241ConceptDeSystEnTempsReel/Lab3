@@ -6110,7 +6110,7 @@ LOAD C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
                 0x0000000008008708                . = ALIGN (0x4)
                 0x0000000008008708                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000       0x68 load address 0x0000000008008708
+.data           0x0000000020000000       0x70 load address 0x0000000008008708
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
@@ -6118,64 +6118,64 @@ LOAD C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .data.Font_11x18
                 0x0000000020000000        0x8 ./Core/Src/fonts.o
                 0x0000000020000000                Font_11x18
+ .data.code     0x0000000020000008        0x4 ./Core/Src/main.o
+                0x0000000020000008                code
+ .data.codeSet  0x000000002000000c        0x4 ./Core/Src/main.o
+                0x000000002000000c                codeSet
  .data.SystemCoreClock
-                0x0000000020000008        0x4 ./Core/Src/system_stm32f4xx.o
-                0x0000000020000008                SystemCoreClock
+                0x0000000020000010        0x4 ./Core/Src/system_stm32f4xx.o
+                0x0000000020000010                SystemCoreClock
  .data.uwTickPrio
-                0x000000002000000c        0x4 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
-                0x000000002000000c                uwTickPrio
+                0x0000000020000014        0x4 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+                0x0000000020000014                uwTickPrio
  .data.uwTickFreq
-                0x0000000020000010        0x1 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
-                0x0000000020000010                uwTickFreq
- *fill*         0x0000000020000011        0x3 
+                0x0000000020000018        0x1 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+                0x0000000020000018                uwTickFreq
+ *fill*         0x0000000020000019        0x3 
  .data.uxCriticalNesting
-                0x0000000020000014        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
+                0x000000002000001c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
  .data._impure_data
-                0x0000000020000018       0x4c C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-impure.o)
-                0x0000000020000018                _impure_data
+                0x0000000020000020       0x4c C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-impure.o)
+                0x0000000020000020                _impure_data
  .data._impure_ptr
-                0x0000000020000064        0x4 C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-impure.o)
-                0x0000000020000064                _impure_ptr
+                0x000000002000006c        0x4 C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard\libc_nano.a(libc_a-impure.o)
+                0x000000002000006c                _impure_ptr
  *(.RamFunc)
  *(.RamFunc*)
-                0x0000000020000068                . = ALIGN (0x4)
-                0x0000000020000068                _edata = .
+                0x0000000020000070                . = ALIGN (0x4)
+                0x0000000020000070                _edata = .
 
-.igot.plt       0x0000000020000068        0x0 load address 0x0000000008008770
- .igot.plt      0x0000000020000068        0x0 C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/thumb/v7e-m+fp/hard/crtbegin.o
-                0x0000000020000068                . = ALIGN (0x4)
+.igot.plt       0x0000000020000070        0x0 load address 0x0000000008008778
+ .igot.plt      0x0000000020000070        0x0 C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+                0x0000000020000070                . = ALIGN (0x4)
 
-.bss            0x0000000020000068     0x5064 load address 0x0000000008008770
-                0x0000000020000068                _sbss = .
-                0x0000000020000068                __bss_start__ = _sbss
+.bss            0x0000000020000070     0x505c load address 0x0000000008008778
+                0x0000000020000070                _sbss = .
+                0x0000000020000070                __bss_start__ = _sbss
  *(.bss)
- .bss           0x0000000020000068       0x1c C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/thumb/v7e-m+fp/hard/crtbegin.o
+ .bss           0x0000000020000070       0x1c C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.win32_1.1.100.202309141235/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/thumb/v7e-m+fp/hard/crtbegin.o
  *(.bss*)
- .bss.key       0x0000000020000084        0x1 ./Core/Src/Keypad4X4.o
-                0x0000000020000084                key
- *fill*         0x0000000020000085        0x3 
- .bss.hi2c1     0x0000000020000088       0x54 ./Core/Src/main.o
-                0x0000000020000088                hi2c1
- .bss.huart2    0x00000000200000dc       0x48 ./Core/Src/main.o
-                0x00000000200000dc                huart2
+ .bss.key       0x000000002000008c        0x1 ./Core/Src/Keypad4X4.o
+                0x000000002000008c                key
+ *fill*         0x000000002000008d        0x3 
+ .bss.hi2c1     0x0000000020000090       0x54 ./Core/Src/main.o
+                0x0000000020000090                hi2c1
+ .bss.huart2    0x00000000200000e4       0x48 ./Core/Src/main.o
+                0x00000000200000e4                huart2
  .bss.defaultTaskHandle
-                0x0000000020000124        0x4 ./Core/Src/main.o
-                0x0000000020000124                defaultTaskHandle
- .bss.TaskKeypadHandle
-                0x0000000020000128        0x4 ./Core/Src/main.o
-                0x0000000020000128                TaskKeypadHandle
- .bss.TaskDisplayHandle
                 0x000000002000012c        0x4 ./Core/Src/main.o
-                0x000000002000012c                TaskDisplayHandle
- .bss.TaskLEDHandle
+                0x000000002000012c                defaultTaskHandle
+ .bss.TaskKeypadHandle
                 0x0000000020000130        0x4 ./Core/Src/main.o
-                0x0000000020000130                TaskLEDHandle
- .bss.hold      0x0000000020000134        0x4 ./Core/Src/main.o
-                0x0000000020000134                hold
- .bss.code      0x0000000020000138        0x4 ./Core/Src/main.o
-                0x0000000020000138                code
- .bss.codeSet   0x000000002000013c        0x4 ./Core/Src/main.o
-                0x000000002000013c                codeSet
+                0x0000000020000130                TaskKeypadHandle
+ .bss.TaskDisplayHandle
+                0x0000000020000134        0x4 ./Core/Src/main.o
+                0x0000000020000134                TaskDisplayHandle
+ .bss.TaskLEDHandle
+                0x0000000020000138        0x4 ./Core/Src/main.o
+                0x0000000020000138                TaskLEDHandle
+ .bss.hold      0x000000002000013c        0x4 ./Core/Src/main.o
+                0x000000002000013c                hold
  .bss.armed     0x0000000020000140        0x4 ./Core/Src/main.o
                 0x0000000020000140                armed
  .bss.SSD1306_Buffer
@@ -6300,7 +6300,7 @@ LOAD C:/ST/STM32CubeIDE_1.14.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
                 0x00000000200050cc                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x00000000200050cc      0x604 load address 0x0000000008008770
+                0x00000000200050cc      0x604 load address 0x0000000008008778
                 0x00000000200050d0                . = ALIGN (0x8)
  *fill*         0x00000000200050cc        0x4 
                 [!provide]                        PROVIDE (end = .)

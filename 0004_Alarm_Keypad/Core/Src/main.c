@@ -85,7 +85,6 @@ char hold[4];
 char code[4];
 int codeSet = 0;
 int armed = 0;
-char ast[4];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -413,82 +412,101 @@ void StartTaskKeypad(void *argument)
 {
   /* USER CODE BEGIN StartTaskKeypad */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
-	  if(codeSet == 0){
-		  int length = strlen(hold);
-		  if(length<4){
-			  key = Get_Key();
-			  sprintf(hold, "%c", key);
-			  HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
-			  HAL_Delay (500);
-		  }else{
-			  strcpy(code, hold);
-			  hold[0] = '\0';
-			  codeSet = 1;
-		  }
-	  }else{
-		  int length = strlen(hold);
-		  if(length<4){
-			  key = Get_Key();
-			  sprintf(hold, "%c", key);
-			  HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
-			  HAL_Delay (500);
-		  }else{
-			  if(hold==code){
-				  armed = ~armed;
-			  }
-		  }
-	  }
-  /* USER CODE END StartTaskKeypad */
-}
+    if (codeSet == 0)
+    {
+      int length = strlen(hold);
+      if (length < 4)
+      {
+        key = Get_Key();
+        sprintf(hold, "%c", key);
+        HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
+        HAL_Delay(500);
+      }
+      else
+      {
+        strcpy(code, hold);
+        hold[0] = '\0';
+        codeSet = 1;
+        HAL_UART_Transmit(&huart2, "Code Set", 8, 100);
+      }
+    }
+    else
+    {
+      int length = strlen(hold);
+      if (length < 4)
+      {
+        key = Get_Key();
+        sprintf(hold, "%c", key);
+        HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
+        HAL_Delay(500);
+      }
+      else
+      {
+        if (strcmp(hold, code) == 0)
+        {
+          HAL_UART_Transmit(&huart2, "CorrectCode", 7, 100);
+          armed = ~armed;
+        }
+        else
+        {
+          HAL_UART_Transmit(&huart2, "IncorrectCode", 7, 100);
+        }
+        hold[0] = '\0';
+      }
+    }
+    /* USER CODE END StartTaskKeypad */
+  }
 }
 
 /* USER CODE BEGIN Header_StartTaskDisplay */
 /**
-* @brief Function implementing the TaskDisplay thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the TaskDisplay thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartTaskDisplay */
 void StartTaskDisplay(void *argument)
 {
   /* USER CODE BEGIN StartTaskDisplay */
   /* Infinite loop */
-	while (1)
-	{
-		int passwordLength = strlen(hold); // Current length of the password
-	    SSD1306_GotoXY (0, 30);
-	    SSD1306_Puts("*", &Font_11x18, 1); // Display the password mask
-	    SSD1306_UpdateScreen(); // Update the screen to show the masked password
-	    HAL_Delay (500); // Delay to debounce and slow down input for demo purposes
-	}
+  for (;;)
+  {
+    int passwordLength = strlen(hold); // Current length of the password
+    SSD1306_GotoXY(0, 30);
+    SSD1306_Puts("*", &Font_11x18, 1); // Display the password mask
+    SSD1306_UpdateScreen();            // Update the screen to show the masked password
+    osDelay(100);                      // Delay
+  }
   /* USER CODE END StartTaskDisplay */
 }
 
 /* USER CODE BEGIN Header_StartTaskLED */
 /**
-* @brief Function implementing the TaskLED thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the TaskLED thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartTaskLED */
 void StartTaskLED(void *argument)
 {
   /* USER CODE BEGIN StartTaskLED */
   /* Infinite loop */
-	for (;;)
-	  {
-		if (armed){
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
-		}
-		else{
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
-		}
-
-	}
+  for (;;)
+  {
+    if (armed)
+    {
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
+    }
+    else
+    {
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
+    }
+    osDelay(100);
+  }
   /* USER CODE END StartTaskLED */
 }
 
