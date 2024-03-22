@@ -413,7 +413,7 @@ void StartTaskKeypad(void *argument)
     if (length < 4)
     {
       key = Get_Key();
-      sprintf(hold, "%c", key);
+      strcat(hold, &key);
       HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
       HAL_Delay(500);
     }
@@ -423,30 +423,27 @@ void StartTaskKeypad(void *argument)
       {
         strcpy(code, hold);
         codeSet = 1;
+        HAL_UART_Transmit(&huart2, "HELLO", 100, 100);
+
         strcpy(hold, "");
-        HAL_UART_Transmit(&huart2, "Code Set", 8, 100);
         HAL_Delay(500);
       }
       else
       {
         if (strcmp(hold, code) == 0)
         {
-          HAL_UART_Transmit(&huart2, "CORRECT", 7, 100);
           HAL_Delay(500);
           if (armed == 0)
           {
             armed = 1;
-            HAL_UART_Transmit(&huart2, "ARMED", 5, 100);
           }
           else
           {
             armed = 0;
-            HAL_UART_Transmit(&huart2, "DISARMED", 8, 100);
           }
         }
         else
         {
-          HAL_UART_Transmit(&huart2, "INCORRECT", 9, 100);
         }
         strcpy(hold, "");
       }
@@ -462,21 +459,30 @@ void StartTaskKeypad(void *argument)
  * @retval None
  */
 /* USER CODE END Header_StartTaskDisplay */
+
+char* replaceCharsWithAsterisks(const char* input, int size) {
+   // Allocate memory for the new array (+1 for the null terminator)
+   char* result = (char*)malloc((size + 1) * sizeof(char));
+   // Replace each char with an asterisk
+   for (int i = 0; i < size; i++) {
+       result[i] = '*';
+   }
+
+   // Add null terminator at the end
+   result[size] = '\0';
+
+   return result;
+}
+
 void StartTaskDisplay(void *argument)
 {
   /* USER CODE BEGIN StartTaskDisplay */
   /* Infinite loop */
   for (;;)
   {
-	int passwordLength = strlen(hold); // Current length of the password
-	for (int i = 0; i < passwordLength; i++)
-	{
-    SSD1306_Putc('*', &Font_11x18, 1);
-	}
-	for (int i = 0; i < 4 - passwordLength; i++)
-	{
-    SSD1306_Putc(' ', &Font_11x18, 1);
-	}
+	SSD1306_GotoXY (0, 30);
+	char* result = replaceCharsWithAsterisks(hold,strlen(hold));
+	SSD1306_Puts (result, &Font_11x18, 1);
 	SSD1306_UpdateScreen();            // Update the screen to show the masked password
     SSD1306_GotoXY (0,0);
     if (armed)
