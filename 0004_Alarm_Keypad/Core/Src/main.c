@@ -105,129 +105,110 @@ void setLED(bool armed)
 
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+ HAL_Init();
 
-  /* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+ SystemClock_Config();
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
 
-  /* USER CODE BEGIN Init */
+ MX_GPIO_Init();
+ MX_USART2_UART_Init();
+ MX_I2C1_Init();
 
-  /* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+ SSD1306_Init();
+ SSD1306_GotoXY(0, 0);
 
-  /* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+ SSD1306_Puts("Enter Code:", &Font_11x18, 1);
+ SSD1306_GotoXY(0, 30);
+ SSD1306_UpdateScreen();
+ SSD1306_UpdateScreen();
+ HAL_Delay(500);
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART2_UART_Init();
-  MX_I2C1_Init();
-  /* USER CODE BEGIN 2 */
-  /* USER CODE BEGIN 2 */
-  SSD1306_Init();
-  SSD1306_GotoXY(0, 0);
-  // SSD1306_Puts ("Voltage:", &Font_11x18, 1);
-  SSD1306_Puts("Enter Code:", &Font_11x18, 1);
-  SSD1306_GotoXY(0, 30);
-  SSD1306_UpdateScreen();
-  SSD1306_UpdateScreen();
-  HAL_Delay(500);
 
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-
-    int length = 0;
-    for (int i = 0; i <= 6; i++)
-    {
-      key = Get_Key();
-      length++;
-      if (key == '#' && (strlen(code) == 4 || strlen(code) == 6))
-      {
-        SSD1306_GotoXY(0, 30);
-        SSD1306_UpdateScreen();
-        SSD1306_Puts("ARME", &Font_11x18, 1);
-        SSD1306_UpdateScreen();
-        armed = true;
-        setLED(armed);
-        break;
-      }
-      else
-      {
-        strcat(code, &key);
-        SSD1306_GotoXY(0, 30);
-        SSD1306_UpdateScreen();
-        char *result = replaceCharsWithAsterisks(code, length);
-        SSD1306_Puts(result, &Font_11x18, 1);
-        SSD1306_UpdateScreen();
-      }
-    }
-    while (1)
-    {
-      char temp[6];
-      length = 0;
-      SSD1306_GotoXY(0, 30);
-      SSD1306_Clear();
-      SSD1306_UpdateScreen();
-      if (armed == true)
-      {
-        SSD1306_Puts("ARME", &Font_11x18, 1);
-      }
-      else
-      {
-        SSD1306_Puts("NON-ARME", &Font_11x18, 1);
-      }
-      SSD1306_UpdateScreen();
-
-      HAL_Delay(1500);
-
-      SSD1306_GotoXY(0, 30);
-      SSD1306_Clear();
-      SSD1306_UpdateScreen();
-
-      memset(temp, '\0', sizeof(temp));
-
-      for (int i = 0; i <= 6; i++)
-      {
-        key = Get_Key();
-        length++;
-        if (key == '#')
-        {
-          if (0 == strcmp(code, temp))
-          {
-            armed = ~armed;
-            setLED(armed);
-          }
-          break;
-        }
-        else
-        {
-          strcat(temp, &key);
-
-          SSD1306_GotoXY(0, 30);
-          SSD1306_UpdateScreen();
-          char *result = replaceCharsWithAsterisks(code, length);
-          SSD1306_Puts(result, &Font_11x18, 1);
-          SSD1306_UpdateScreen();
-        }
-      }
-    }
-  }
-  /* USER CODE END 3 */
+ while (1)
+ {
+   int length = 0;
+   for (int i = 0; i <= 6; i++)
+   {
+     key = Get_Key();
+     length++;
+     if (key == '#' && (strlen(code) == 4 || strlen(code) == 6))
+     {
+       SSD1306_GotoXY(0, 30);
+       SSD1306_UpdateScreen();
+       SSD1306_Puts("ARME", &Font_11x18, 1);
+       SSD1306_UpdateScreen();
+       armed = true;
+       setLED(armed);
+       break;
+     }
+     else
+     {
+       strcat(code, &key);
+       SSD1306_GotoXY(0, 30);
+       SSD1306_UpdateScreen();
+       char *result = replaceCharsWithAsterisks(code, length);
+       SSD1306_Puts(result, &Font_11x18, 1);
+       SSD1306_UpdateScreen();
+     }
+   }
+   while (1)
+   {
+     char temp[6];
+     length = 0;
+     SSD1306_GotoXY(0, 30);
+     SSD1306_Clear();
+     SSD1306_UpdateScreen();
+     if (armed == true)
+     {
+       SSD1306_Puts("ARME", &Font_11x18, 1);
+     }
+     else
+     {
+       SSD1306_Puts("NON-ARME", &Font_11x18, 1);
+     }
+     SSD1306_UpdateScreen();
+     HAL_Delay(1500);
+     SSD1306_GotoXY(0, 30);
+     SSD1306_Clear();
+     SSD1306_UpdateScreen();
+     memset(temp, '\0', sizeof(temp));
+     for (int i = 0; i <= 6; i++)
+     {
+       key = Get_Key();
+       length++;
+       if (key == '#')
+       {
+         if (0 == strcmp(code, temp))
+         {
+        	 if (armed == true)
+			  {
+				armed = false;
+			  }
+			  else
+			  {
+				armed = true;
+			  }
+           setLED(armed);
+         }
+         break;
+       }
+       else
+       {
+         strcat(temp, &key);
+         SSD1306_GotoXY(0, 30);
+         SSD1306_UpdateScreen();
+         char *result = replaceCharsWithAsterisks(code, length);
+         SSD1306_Puts(result, &Font_11x18, 1);
+         SSD1306_UpdateScreen();
+       }
+     }
+   }
+ }
 }
+
 
 /**
  * @brief System Clock Configuration
