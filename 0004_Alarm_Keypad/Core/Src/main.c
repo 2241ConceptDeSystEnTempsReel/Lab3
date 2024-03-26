@@ -81,10 +81,12 @@ const osThreadAttr_t TaskLED_attributes = {
 };
 /* USER CODE BEGIN PV */
 extern char key;
-char hold[4];
-char code[4];
-int codeSet = 0;
-int armed = 0;
+char hold[6];
+char temp[6];
+char code[6];
+bool codeSet = false;
+bool armed = false;
+int length = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,6 +112,23 @@ void StartTaskLED(void *argument);
  * @brief  The application entry point.
  * @retval int
  */
+
+char* replaceCharsWithAsterisks(const char* input, int size) {
+   // Allocate memory for the new array (+1 for the null terminator)
+   char* result = (char*)malloc((size + 1) * sizeof(char));
+   // Replace each char with an asterisk
+   for (int i = 0; i < size; i++) {
+       result[i] = '*';
+   }
+
+   // Add null terminator at the end
+   result[size] = '\0';
+
+   return result;
+}
+
+
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -337,7 +356,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, KC0_Pin | KC3_Pin | KC1_Pin | KC2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, KC0_Pin | GPIO_PIN_13 | GPIO_PIN_14 | KC3_Pin | KC1_Pin | KC2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PA5 PA6 PA7 */
   GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
@@ -347,7 +366,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : KC0_Pin KC3_Pin KC1_Pin KC2_Pin */
-  GPIO_InitStruct.Pin = KC0_Pin | KC3_Pin | KC1_Pin | KC2_Pin;
+  GPIO_InitStruct.Pin = KC0_Pin | GPIO_PIN_13 | GPIO_PIN_14 | KC3_Pin | KC1_Pin | KC2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -409,45 +428,41 @@ void StartTaskKeypad(void *argument)
   /* Infinite loop */
   for (;;)
   {
-    int length = strlen(hold);
-    if (length < 4)
-    {
-      key = Get_Key();
-      strcat(hold, &key);
-      HAL_UART_Transmit(&huart2, (uint8_t *)hold, strlen(hold), 100);
-      HAL_Delay(500);
-    }
-    else
-    {
-      if (codeSet == 0)
-      {
-        strcpy(code, hold);
-        codeSet = 1;
-        HAL_UART_Transmit(&huart2, "HELLO", 100, 100);
-
-        strcpy(hold, "");
-        HAL_Delay(500);
-      }
-      else
-      {
-        if (strcmp(hold, code) == 0)
-        {
-          HAL_Delay(500);
-          if (armed == 0)
-          {
-            armed = 1;
-          }
-          else
-          {
-            armed = 0;
-          }
-        }
-        else
-        {
-        }
-        strcpy(hold, "");
-      }
-    }
+	 if(codeSet == false){
+	   key = Get_Key();
+	   length++;
+	   if (key == '#' && (strlen(temp) == 4 || strlen(temp) == 6))
+	   {
+		 strcat(code, temp);
+		 armed = true;
+		 codeSet = true;
+		 memset(temp, '\0', sizeof(temp));
+		 length = 0;
+	   } else
+	   {
+		 strcat(temp, &key);
+	   }
+	 } else {
+		key = Get_Key();
+		length++;
+		if (key == '#'){
+		  if (0 == strcmp(code, temp))
+		  {
+			if (armed == true){
+				armed = false;
+			} else {
+				armed = true;
+			}
+		  }
+		  memset(temp, '\0', sizeof(temp));
+          length = 0;
+		}
+		else
+		{
+		  strcat(temp, &key);
+		}
+	  }
+	 osDelay(100);
     /* USER CODE END StartTaskKeypad */
   }
 }
@@ -460,32 +475,15 @@ void StartTaskKeypad(void *argument)
  */
 /* USER CODE END Header_StartTaskDisplay */
 
-char* replaceCharsWithAsterisks(const char* input, int size) {
-   // Allocate memory for the new array (+1 for the null terminator)
-   char* result = (char*)malloc((size + 1) * sizeof(char));
-   // Replace each char with an asterisk
-   for (int i = 0; i < size; i++) {
-       result[i] = '*';
-   }
-
-   // Add null terminator at the end
-   result[size] = '\0';
-
-   return result;
-}
-
 void StartTaskDisplay(void *argument)
 {
   /* USER CODE BEGIN StartTaskDisplay */
   /* Infinite loop */
   for (;;)
   {
-	SSD1306_GotoXY (0, 30);
-	char* result = replaceCharsWithAsterisks(hold,strlen(hold));
-	SSD1306_Puts (result, &Font_11x18, 1);
-	SSD1306_UpdateScreen();            // Update the screen to show the masked password
+	SSD1306_Clear();
     SSD1306_GotoXY (0,0);
-    if (armed)
+	 if (armed)
 	{
 	  SSD1306_Puts ("ARMED:", &Font_11x18, 1);
 	}
@@ -493,8 +491,12 @@ void StartTaskDisplay(void *argument)
 	{
 	  SSD1306_Puts ("NOT ARMED:", &Font_11x18, 1);
 	}
-    SSD1306_UpdateScreen();
-    osDelay(100);                      // Delay
+	SSD1306_UpdateScreen();
+	SSD1306_GotoXY (0, 30);
+	char *result = replaceCharsWithAsterisks(temp, length);
+	SSD1306_Puts (result, &Font_11x18, 1);
+	SSD1306_UpdateScreen();            // Update the screen to show the masked password
+    osDelay(500);                      // Delay
   }
   /* USER CODE END StartTaskDisplay */
 }
@@ -512,17 +514,17 @@ void StartTaskLED(void *argument)
   /* Infinite loop */
   for (;;)
   {
-    if (armed)
-    {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);
-    }
-    else
-    {
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);
-    }
-    osDelay(100);
+	  if (armed == true)
+		{
+		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);
+		}
+		else
+		{
+		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);
+		}
+	  osDelay(100);
   }
   /* USER CODE END StartTaskLED */
 }
