@@ -377,6 +377,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(KR0_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PA10_Pin (entrée - PIR) */
+  GPIO_InitTypeDef GPIO_InitStruct;
+  GPIO_InitStruct.Pin = PIR_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(PIR_PORT, &GPIO_InitStruct);
+
+    /*Configure GPIO pin : PB1_Pin (sortie - Buzzer)*/
+  GPIO_InitStruct.Pin = BUZZER_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(BUZZER_PORT, &GPIO_InitStruct);
+
   /* USER CODE BEGIN MX_GPIO_Init_2 */
   /* USER CODE END MX_GPIO_Init_2 */
 }
